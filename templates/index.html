@@ -5,46 +5,59 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Zack Cinema | حكايات كورة</title>
     <style>
-        body { background-color: #0b0b0b; color: white; font-family: Arial, sans-serif; margin: 0; padding: 15px; text-align: center; }
-        .section { background: #1a1a1a; border: 1px solid #333; border-radius: 12px; padding: 15px; margin-bottom: 15px; }
-        h2 { color: #ed1c24; font-size: 1.2em; margin-top: 0; }
-        .btn { display: inline-block; padding: 10px 15px; margin: 5px; border-radius: 5px; text-decoration: none; font-weight: bold; color: white; font-size: 14px; }
-        .whatsapp { background: #25d366; } .telegram { background: #0088cc; } .sms { background: #444; }
-        input { padding: 10px; width: 90%; margin: 8px 0; border-radius: 5px; border: 1px solid #444; background: #000; color: white; }
-        .sub-btn { background: #ed1c24; color: white; border: none; width: 90%; padding: 10px; border-radius: 5px; font-weight: bold; cursor: pointer; }
+        body { background-color: #0b0b0b; color: white; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 15px; text-align: center; }
+        .section { background: #1a1a1a; border: 1px solid #333; border-radius: 12px; padding: 15px; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+        h2 { color: #ed1c24; font-size: 1.3em; margin-top: 0; border-bottom: 1px solid #333; padding-bottom: 10px; }
+        p { font-size: 14px; color: #ccc; }
+        .btn { display: inline-block; padding: 12px 20px; margin: 5px; border-radius: 8px; text-decoration: none; font-weight: bold; color: white; font-size: 14px; transition: 0.3s; }
+        .whatsapp { background: #25d366; } .whatsapp:hover { background: #1eb954; }
+        .telegram { background: #0088cc; } .telegram:hover { background: #0077b5; }
+        .sms { background: #444; }
+        input { padding: 12px; width: 90%; margin: 8px 0; border-radius: 8px; border: 1px solid #444; background: #000; color: white; text-align: center; }
+        .sub-btn { background: #ed1c24; color: white; border: none; width: 95%; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px; }
+        .sub-btn:hover { background: #c1141a; }
+        .price-tag { color: #ed1c24; font-weight: bold; font-size: 1.2em; }
     </style>
 </head>
 <body>
 
     <div class="section">
         <h2>🔴 مباشر الآن</h2>
-        <p>{{ info.title }}</p>
-        <div style="font-size: 2em; font-weight: bold; color: #ed1c24;">{{ info.score }}</div>
+        <p style="font-weight: bold; color: white;">{{ info.title }}</p>
+        <div style="font-size: 2.5em; font-weight: bold; color: #ed1c24; margin: 10px 0;">{{ info.score }}</div>
+        <div style="background: #ed1c24; display: inline-block; padding: 2px 10px; border-radius: 5px; font-size: 12px; animation: blink 1s infinite;">لايف</div>
     </div>
 
     <div class="section">
         <h2>📊 نتائج الماتشات</h2>
-        <p>جاري تحديث جدول النتائج...</p>
+        <p>مباريات اليوم: (سيتم التحديث آلياً)</p>
+        <div style="font-size: 13px; color: #888;">لا يوجد مباريات منتهية حالياً</div>
     </div>
 
     <div class="section">
         <h2>🛠️ الدعم الفني</h2>
+        <p>لأي استفسار أو مشكلة واجهتك:</p>
         <a href="https://wa.me/201040077271" class="btn whatsapp">واتساب</a>
         <a href="sms:+201003442771" class="btn sms">رسائل SMS</a>
         <br>
-        <a href="https://t.me/YourChannel" class="btn telegram">قناة التلجرام</a>
+        <a href="https://t.me/+NAPc7AALNTI4MmE0" class="btn telegram">قناة التلجرام الرسمية</a>
     </div>
 
     <div class="section" style="border: 2px dashed #ed1c24;">
         <h2>💳 اشتراك (20 ج/شهر)</h2>
-        <p>فودافون كاش: <span style="color: #ed1c24; font-weight: bold;">01032447101</span></p>
-        <form>
-            <input type="text" placeholder="الرقم اللي حولت منه" required>
-            <label style="font-size: 12px; display: block; margin: 5px;">ارفع سكرين شوت التحويل:</label>
-            <input type="file" accept="image/*" required>
-            <button type="submit" class="sub-btn">تأكيد الاشتراك</button>
+        <p>حول المبلغ لـ فودافون كاش: <br> <span class="price-tag">01032447101</span></p>
+        <form action="/subscribe" method="POST" enctype="multipart/form-data">
+            <input type="text" name="user_phone" placeholder="أدخل رقمك الذي قمت بالتحويل منه" required>
+            <label style="font-size: 13px; display: block; margin: 10px 0 5px; color: #aaa;">ارفع لقطة شاشة (Screenshot) للتحويل:</label>
+            <input type="file" name="screenshot" accept="image/*" required>
+            <button type="submit" class="sub-btn">تأكيد عملية الدفع</button>
         </form>
     </div>
 
+    <p style="font-size: 10px; color: #444;">جميع الحقوق محفوظة لـ Zack Cinema &copy; 2026</p>
+
+    <style>
+        @keyframes blink { 0% {opacity: 1;} 50% {opacity: 0.3;} 100% {opacity: 1;} }
+    </style>
 </body>
 </html>
