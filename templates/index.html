@@ -17,21 +17,29 @@
         .sub-btn { background: #ed1c24; color: white; border: none; width: 95%; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px; }
         .sub-btn:hover { background: #c1141a; }
         .price-tag { color: #ed1c24; font-weight: bold; font-size: 1.2em; }
+
+        /* ستايل صفوف الماتشات المباشرة */
+        .match-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #222; }
+        .team-name { flex: 1; font-size: 13px; font-weight: bold; }
+        .score-box { background: #000; color: #00ff00; padding: 3px 10px; border-radius: 5px; font-weight: bold; margin: 0 5px; border: 1px solid #333; min-width: 40px; }
     </style>
 </head>
 <body>
 
     <div class="section">
         <h2>🔴 مباشر الآن</h2>
-        <p style="font-weight: bold; color: white;">{{ info.title }}</p>
-        <div style="font-size: 2.5em; font-weight: bold; color: #ed1c24; margin: 10px 0;">{{ info.score }}</div>
-        <div style="background: #ed1c24; display: inline-block; padding: 2px 10px; border-radius: 5px; font-size: 12px; animation: blink 1s infinite;">لايف</div>
+        <div id="live-matches-container">
+            <p style="color: #888;">جاري فحص المباريات الجارية...</p>
+        </div>
+        <div style="background: #ed1c24; display: inline-block; padding: 2px 10px; border-radius: 5px; font-size: 12px; animation: blink 1s infinite; margin-top: 10px;">لايف</div>
     </div>
 
     <div class="section">
         <h2>📊 نتائج الماتشات</h2>
-        <p>مباريات اليوم: (سيتم التحديث آلياً)</p>
-        <div style="font-size: 13px; color: #888;">لا يوجد مباريات منتهية حالياً</div>
+        <p>سيتم التحديث آلياً كل دقيقة</p>
+        <div id="results-list" style="font-size: 13px; color: #ccc;">
+            جاري جلب النتائج...
+        </div>
     </div>
 
     <div class="section">
@@ -56,8 +64,65 @@
 
     <p style="font-size: 10px; color: #444;">جميع الحقوق محفوظة لـ Zack Cinema &copy; 2026</p>
 
+    <script>
+        // التوكن الخاص بك من الإيميل
+        const ZACK_TOKEN = "df2a94b9b0f5437b9e1ea1180b53434c";
+        const API_URL = "https://api.football-data.org/v4/matches";
+
+        async function fetchZackScores() {
+            try {
+                const response = await fetch(API_URL, {
+                    headers: { 'X-Auth-Token': ZACK_TOKEN }
+                });
+                const data = await response.json();
+
+                const liveContainer = document.getElementById('live-matches-container');
+                const resultsContainer = document.getElementById('results-list');
+
+                if (data.matches && data.matches.length > 0) {
+                    let liveHtml = '';
+                    let resultsHtml = '';
+
+                    data.matches.forEach(match => {
+                        const hScore = match.score.fullTime.home !== null ? match.score.fullTime.home : 0;
+                        const aScore = match.score.fullTime.away !== null ? match.score.fullTime.away : 0;
+                        
+                        const matchHtml = `
+                            <div class="match-item">
+                                <span class="team-name" style="text-align: left;">${match.homeTeam.shortName || match.homeTeam.name}</span>
+                                <span class="score-box">${hScore} - ${aScore}</span>
+                                <span class="team-name" style="text-align: right;">${match.awayTeam.shortName || match.awayTeam.name}</span>
+                            </div>
+                        `;
+
+                        // لو الماتش شغال دلوقتي حطه في المباشر، لو خلص حطه في النتائج
+                        if (match.status === 'IN_PLAY' || match.status === 'LIVE') {
+                            liveHtml += matchHtml;
+                        } else {
+                            resultsHtml += matchHtml;
+                        }
+                    });
+
+                    liveContainer.innerHTML = liveHtml || '<p>لا يوجد مباريات مباشرة حالياً</p>';
+                    resultsContainer.innerHTML = resultsHtml || '<p>لا يوجد نتائج مسجلة اليوم</p>';
+                } else {
+                    liveContainer.innerHTML = '<p>لا توجد مباريات جارية</p>';
+                    resultsContainer.innerHTML = '<p>لا توجد نتائج حالياً</p>';
+                }
+            } catch (error) {
+                console.error("Error:", error);
+                document.getElementById('results-list').innerHTML = 'تأكد من تفعيل الحساب من الإيميل';
+            }
+        }
+
+        // تحديث كل ثانية تلقائياً
+        fetchZackScores();
+        setInterval(fetchZackScores, 60000);
+    </script>
+
     <style>
         @keyframes blink { 0% {opacity: 1;} 50% {opacity: 0.3;} 100% {opacity: 1;} }
     </style>
 </body>
-</html>
+    </html>
+    
