@@ -3,41 +3,99 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>حكاية كورة - البث المباشر</title>
+    <title>حكايات كورة - النتائج المباشرة</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #0f172a; color: white; text-align: center; padding: 10px; margin: 0; }
-        .container { max-width: 800px; margin: auto; background: #1e293b; padding: 20px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        h1 { color: #22c55e; font-size: 1.5rem; margin-bottom: 10px; }
-        
-        /* مكان مشغل الفيديو */
-        .video-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 15px; background: #000; border: 2px solid #334155; }
-        .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
-
-        .buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }
-        .btn { padding: 12px; text-decoration: none; border-radius: 10px; font-weight: bold; font-size: 0.9rem; transition: 0.3s; color: white; border: none; }
-        .wa-main { background: #25d366; }
-        .wa-support { background: #3b82f6; }
-        .live-badge { background: red; color: white; padding: 2px 8px; border-radius: 5px; font-size: 0.8rem; animation: blink 1s infinite; vertical-align: middle; }
-        @keyframes blink { 0% {opacity: 1;} 50% {opacity: 0.3;} 100% {opacity: 1;} }
-        footer { margin-top: 20px; font-size: 0.8rem; color: #64748b; }
+        body {
+            background-color: #0b0b0b;
+            color: #fff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .match-card {
+            background: linear-gradient(145deg, #1a1a1a, #111);
+            width: 90%;
+            max-width: 450px;
+            padding: 25px;
+            border-radius: 20px;
+            border: 1px solid #333;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        .logo-box {
+            color: #ed1c24;
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        .teams-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 20px 0;
+        }
+        .team {
+            flex: 1;
+        }
+        .team-name {
+            font-size: 1.1em;
+            margin-top: 10px;
+        }
+        .score {
+            font-size: 3.5em;
+            font-weight: 800;
+            color: #ed1c24;
+            flex: 1;
+            text-shadow: 0 0 15px rgba(237, 28, 36, 0.4);
+        }
+        .match-status {
+            display: inline-block;
+            background: #ed1c24;
+            padding: 5px 15px;
+            border-radius: 50px;
+            font-size: 0.8em;
+            font-weight: bold;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        .match-title {
+            color: #888;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+        }
     </style>
+    <meta http-equiv="refresh" content="30">
 </head>
 <body>
-    <div class="container">
-        <h1>⚽ حكاية كورة <span class="live-badge">مباشر الآن</span></h1>
+
+    <div class="match-card">
+        <div class="logo-box">HEKAYAT KORA</div>
         
-        <div class="video-container">
-            <iframe src="https://www.yalla-shoot.com/" frameborder="0" allowfullscreen></iframe>
+        <div class="match-title">{{ info.title }}</div>
+        
+        <div class="teams-container">
+            <div class="team">
+                <div class="team-name">برشلونة</div>
+            </div>
+            
+            <div class="score">{{ info.score }}</div>
+            
+            <div class="team">
+                <div class="team-name">نيوكاسل</div>
+            </div>
         </div>
 
-        <p style="margin-top: 15px; font-size: 0.9rem; color: #cbd5e1;">إذا توقف البث، قم بتحديث الصفحة أو تواصل مع الدعم</p>
-
-        <div class="buttons">
-            <a href="https://wa.me/201040077271" class="btn wa-main" target="_blank">💬 اطلب اشتراك</a>
-            <a href="https://wa.me/201003442771" class="btn wa-support" target="_blank">🛠️ الدعم الفني</a>
-        </div>
-        
-        <footer>Zack Cinema © 2026</footer>
+        <div class="match-status">{{ info.status }}</div>
     </div>
+
 </body>
 </html>
