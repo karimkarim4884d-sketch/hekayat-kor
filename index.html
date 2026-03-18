@@ -33,7 +33,14 @@
         <div class="mt-10">
             <h3 class="text-xl font-bold mb-4">🎬 أفلام ومباريات اليوم</h3>
             <div class="grid gap-4" id="content-list">
-                <div class="glass p-4 rounded-xl">جاري تجهيز السيرفر...</div>
+                <div class="glass p-4 rounded-xl flex justify-between items-center">
+                    <span>مباراة القمة: الأهلي vs الزمالك</span>
+                    <span class="text-blue-400">08:00 PM</span>
+                </div>
+                <div class="glass p-4 rounded-xl flex justify-between items-center">
+                    <span>فيلم السهرة: Fast & Furious</span>
+                    <span class="text-yellow-400">مشاهدة الآن</span>
+                </div>
             </div>
         </div>
     </main>
@@ -44,7 +51,7 @@
         import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = {
-            apiKey: "AIzaSyB...", // كود الـ API بتاعك موجود في صورك
+            apiKey: "AIzaSyB-m9eB_ZkH6e8-YourRealKeyHere", // حط الكود اللي كان في الصورة التانية مكان ده
             authDomain: "zack-cinema.firebaseapp.com",
             projectId: "zack-cinema",
             storageBucket: "zack-cinema.appspot.com",
@@ -58,20 +65,22 @@
         const provider = new GoogleAuthProvider();
 
         document.getElementById('login-btn').onclick = async () => {
-            const result = await signInWithPopup(auth, provider);
-            const user = result.user;
-            const userRef = doc(db, "users", user.uid);
-            const snap = await getDoc(userRef);
-            
-            if (!snap.exists()) {
-                const newData = {
-                    name: user.displayName,
-                    points: 100,
-                    zackId: "ZACK-" + Math.floor(1000 + Math.random() * 9000)
-                };
-                await setDoc(userRef, newData);
+            try {
+                const result = await signInWithPopup(auth, provider);
+                const user = result.user;
+                const userRef = doc(db, "users", user.uid);
+                const snap = await getDoc(userRef);
+                
+                if (!snap.exists()) {
+                    const newData = {
+                        name: user.displayName,
+                        points: 100,
+                        zackId: "ZACK-" + Math.floor(1000 + Math.random() * 9000)
+                    };
+                    await setDoc(userRef, newData);
+                }
                 location.reload();
-            }
+            } catch (e) { alert("حدث خطأ، تأكد من إعدادات Firebase"); }
         };
 
         onAuthStateChanged(auth, async (user) => {
