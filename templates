@@ -1,1 +1,103 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zack Cinema | حكايات كورة</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #0f172a; color: white; font-family: sans-serif; }
+        .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .zack-gradient { background: linear-gradient(90deg, #3b82f6, #8b5cf6); }
+    </style>
+</head>
+<body class="min-h-screen">
+
+    <nav class="glass p-4 sticky top-0 z-50 flex justify-between items-center">
+        <h1 class="text-2xl font-bold zack-gradient bg-clip-text text-transparent">Zack Cinema</h1>
+        <button id="login-btn" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg transition">دخول بجوجل</button>
+    </nav>
+
+    <main class="p-6 max-w-4xl mx-auto text-center">
+        <div id="user-info" class="glass p-6 rounded-2xl mb-8 hidden">
+            <img id="user-img" src="" class="w-20 h-20 rounded-full mx-auto border-2 border-blue-500 mb-3">
+            <h2 id="user-name" class="text-xl font-bold"></h2>
+            <p id="zack-id" class="text-blue-400 font-mono mt-2 text-lg"></p>
+            <div class="mt-4 bg-slate-800 p-3 rounded-xl inline-block">
+                <p class="text-gray-400 text-xs">نقاطك</p>
+                <p id="user-points" class="text-yellow-400 font-bold text-xl">0</p>
+            </div>
+        </div>
+
+        <div class="mt-10">
+            <h3 class="text-xl font-bold mb-4">🎬 أفلام ومباريات اليوم</h3>
+            <div class="grid gap-4" id="content-list">
+                <div class="glass p-4 rounded-xl flex justify-between items-center">
+                    <span>مباراة القمة: الأهلي vs الزمالك</span>
+                    <span class="text-blue-400">08:00 PM</span>
+                </div>
+                <div class="glass p-4 rounded-xl flex justify-between items-center">
+                    <span>فيلم السهرة: Fast & Furious</span>
+                    <span class="text-yellow-400">مشاهدة الآن</span>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyB-m9eB_ZkH6e8-YourRealKeyHere", // حط الكود اللي كان في الصورة التانية مكان ده
+            authDomain: "zack-cinema.firebaseapp.com",
+            projectId: "zack-cinema",
+            storageBucket: "zack-cinema.appspot.com",
+            messagingSenderId: "364303491410",
+            appId: "1:364303491410:web:96e838e4a9e87510793138"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const provider = new GoogleAuthProvider();
+
+        document.getElementById('login-btn').onclick = async () => {
+            try {
+                const result = await signInWithPopup(auth, provider);
+                const user = result.user;
+                const userRef = doc(db, "users", user.uid);
+                const snap = await getDoc(userRef);
+                
+                if (!snap.exists()) {
+                    const newData = {
+                        name: user.displayName,
+                        points: 100,
+                        zackId: "ZACK-" + Math.floor(1000 + Math.random() * 9000)
+                    };
+                    await setDoc(userRef, newData);
+                }
+                location.reload();
+            } catch (e) { alert("حدث خطأ، تأكد من إعدادات Firebase"); }
+        };
+
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                const snap = await getDoc(doc(db, "users", user.uid));
+                if (snap.exists()) {
+                    const data = snap.data();
+                    document.getElementById('login-btn').classList.add('hidden');
+                    document.getElementById('user-info').classList.remove('hidden');
+                    document.getElementById('user-name').innerText = user.displayName;
+                    document.getElementById('user-img').src = user.photoURL;
+                    document.getElementById('zack-id').innerText = "ID: " + data.zackId;
+                    document.getElementById('user-points').innerText = data.points;
+                }
+            }
+        });
+    </script>
+</body>
+</html>
 
