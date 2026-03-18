@@ -3,62 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zack Cinema | Live</title>
+    <title>Zack Cinema | System</title>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+    
     <style>
         :root { --main-red: #ed1c24; --dark-bg: #050505; --card-bg: #121212; }
-        body { background-color: var(--dark-bg); color: white; font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; overflow-x: hidden; }
-
-        /* الهيدر */
-        header { 
-            background: var(--card-bg); padding: 15px; display: flex; align-items: center; 
-            justify-content: space-between; border-bottom: 2px solid #222; position: sticky; top: 0; z-index: 100;
-        }
-        .menu-btn { font-size: 28px; cursor: pointer; color: var(--main-red); background: none; border: none; padding: 0 10px; }
-        .logo { font-weight: bold; font-size: 22px; letter-spacing: 1px; }
+        body { background-color: var(--dark-bg); color: white; font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; }
+        header { background: var(--card-bg); padding: 15px; display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #222; position: sticky; top: 0; z-index: 100; }
+        .logo { font-weight: bold; font-size: 22px; }
         .logo span { color: var(--main-red); }
-
-        /* المنيو الجانبية */
-        .sidenav {
-            height: 100%; width: 0; position: fixed; z-index: 1000; top: 0; right: 0;
-            background-color: #0d0d0d; overflow-x: hidden; transition: 0.4s; padding-top: 60px;
-            box-shadow: -10px 0 20px rgba(0,0,0,0.8);
-        }
-        .sidenav a, .menu-section-title { padding: 15px 25px; text-decoration: none; font-size: 18px; color: #bbb; display: block; transition: 0.3s; border-bottom: 1px solid #1a1a1a; }
-        .sidenav a:hover { color: white; background: #1a1a1a; }
-        .sidenav .closebtn { position: absolute; top: 10px; left: 20px; font-size: 40px; color: var(--main-red); cursor: pointer; }
-        .menu-section-title { color: var(--main-red); font-weight: bold; background: #111; font-size: 16px; }
-
-        /* واجهة الماتشات */
-        .container { padding: 20px 15px; max-width: 700px; margin: auto; }
-        .match-card { 
-            background: var(--card-bg); margin-bottom: 15px; padding: 20px; border-radius: 15px; 
-            display: flex; align-items: center; justify-content: space-between;
-            border: 1px solid #222; transition: 0.3s;
-        }
-        .match-card:hover { border-color: var(--main-red); }
-        .team { flex: 1.5; font-weight: 600; font-size: 15px; color: #fff; }
-        .score-container { flex: 1; text-align: center; }
-        .score { 
-            background: #000; color: #00ff00; padding: 8px 15px; border-radius: 10px; 
-            font-family: 'Courier New', monospace; font-size: 20px; font-weight: bold; border: 1px solid #333; display: inline-block;
-        }
-        .live-label { font-size: 10px; color: var(--main-red); margin-top: 5px; display: block; font-weight: bold; animation: blink 1s infinite; }
-
-        /* زر تثبيت التطبيق العائم */
-        #install-app-btn {
-            position: fixed; bottom: 20px; left: 20px; z-index: 999;
-            background: var(--main-red); color: white; border: none;
-            padding: 12px 25px; border-radius: 50px; font-weight: bold;
-            box-shadow: 0 4px 15px rgba(237, 28, 36, 0.5);
-            cursor: pointer; display: none; /* مخفي افتراضياً ويظهر بالكود */
-        }
-
-        /* فورم الاشتراك */
-        .sub-form { padding: 20px; }
-        .sub-form input { width: 100%; padding: 12px; margin-bottom: 10px; background: #000; border: 1px solid #333; color: white; border-radius: 8px; box-sizing: border-box; }
-        .sub-form button { background: var(--main-red); color: white; border: none; width: 100%; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; }
-
-        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0; } 100% { opacity: 1; } }
+        .menu-btn { font-size: 28px; cursor: pointer; color: var(--main-red); background: none; border: none; }
+        
+        /* تصميم المنيو الجانبية */
+        .sidenav { height: 100%; width: 0; position: fixed; z-index: 1000; top: 0; right: 0; background-color: #0d0d0d; overflow-x: hidden; transition: 0.4s; padding-top: 20px; box-shadow: -10px 0 20px rgba(0,0,0,0.8); }
+        .sidenav a, .menu-section-title { padding: 12px 20px; text-decoration: none; font-size: 16px; color: #bbb; display: block; border-bottom: 1px solid #1a1a1a; }
+        .menu-section-title { color: var(--main-red); font-weight: bold; background: #111; }
+        .user-box { padding: 15px; background: #1a1a1a; margin-bottom: 10px; text-align: center; }
+        .login-btn { background: white; color: black; border: none; padding: 10px; border-radius: 5px; cursor: pointer; font-weight: bold; width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        
+        #install-app-btn { position: fixed; bottom: 20px; left: 20px; z-index: 999; background: var(--main-red); color: white; border: none; padding: 12px 20px; border-radius: 50px; font-weight: bold; display: none; box-shadow: 0 5px 15px rgba(237, 28, 36, 0.4); }
+        .match-card { background: var(--card-bg); margin: 10px; padding: 15px; border-radius: 12px; display: flex; align-items: center; justify-content: space-between; border: 1px solid #222; }
     </style>
 </head>
 <body>
@@ -71,96 +37,16 @@
     </header>
 
     <div id="mySidenav" class="sidenav">
-        <span class="closebtn" onclick="closeNav()">&times;</span>
+        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()" style="font-size:30px; text-align: left;">&times;</a>
         
-        <div class="menu-section-title">الدعم الفني</div>
-        <a href="https://wa.me/201040077271" style="color:#25d366;">WhatsApp Support</a>
-        <a href="https://t.me/+NAPc7AALNTI4MmE0" style="color:#0088cc;">Telegram Channel</a>
-        <a href="sms:+201003442771">SMS Message</a>
-        
-        <div class="menu-section-title">اشتراك VIP (20ج)</div>
-        <div class="sub-form">
-            <p style="font-size:12px; color:#888;">فودافون كاش: 01032447101</p>
-            <form action="/subscribe" method="POST" enctype="multipart/form-data">
-                <input type="text" placeholder="رقم الموبايل المحول منه" required>
-                <input type="file" accept="image/*" required>
-                <button type="submit">تأكيد الاشتراك</button>
-            </form>
+        <div class="user-box" id="user-section">
+            <button class="login-btn" onclick="loginWithGoogle()">
+                 تسجيل دخول بجوجل
+            </button>
         </div>
-    </div>
 
-    <div class="container">
-        <h3 style="text-align: right; border-right: 4px solid var(--main-red); padding-right: 10px; margin-bottom: 25px;">نتائج ومباريات اليوم</h3>
-        <div id="matches-display">
-            <p style="text-align:center; color:#666;">جاري جلب البيانات من Zack Cinema API...</p>
-        </div>
-    </div>
-
-    <script>
-        // دوال المنيو
-        function openNav() { document.getElementById("mySidenav").style.width = "300px"; }
-        function closeNav() { document.getElementById("mySidenav").style.width = "0"; }
-
-        // كود الـ API
-        const API_KEY = "df2a94b9b0f5437b9e1ea1180b53434c";
-        async function fetchMatches() {
-            const display = document.getElementById('matches-display');
-            try {
-                const response = await fetch('https://api.football-data.org/v4/matches', {
-                    headers: { 'X-Auth-Token': API_KEY }
-                });
-                const data = await response.json();
-                display.innerHTML = '';
-
-                if (data.matches && data.matches.length > 0) {
-                    data.matches.forEach(match => {
-                        const hScore = match.score.fullTime.home !== null ? match.score.fullTime.home : '-';
-                        const aScore = match.score.fullTime.away !== null ? match.score.fullTime.away : '-';
-                        const isLive = match.status === 'IN_PLAY' || match.status === 'LIVE';
-
-                        display.innerHTML += `
-                            <div class="match-card">
-                                <div class="team" style="text-align:left;">${match.homeTeam.shortName || match.homeTeam.name}</div>
-                                <div class="score-container">
-                                    <div class="score">${hScore} : ${aScore}</div>
-                                    ${isLive ? '<span class="live-label">● LIVE</span>' : '<span style="font-size:10px; color:#555">اليوم</span>'}
-                                </div>
-                                <div class="team" style="text-align:right;">${match.awayTeam.shortName || match.awayTeam.name}</div>
-                            </div>
-                        `;
-                    });
-                } else {
-                    display.innerHTML = '<p style="text-align:center; color:#666;">لا توجد مباريات جارية الآن</p>';
-                }
-            } catch (error) {
-                display.innerHTML = '<p style="text-align:center; color:var(--main-red);">خطأ في جلب الماتشات (تجاوزت الحد المسموح)</p>';
-            }
-        }
-
-        // كود تثبيت التطبيق (PWA)
-        let deferredPrompt;
-        const installBtn = document.getElementById('install-app-btn');
-
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            installBtn.style.display = 'block'; // إظهار الزرار لو المتصفح بيدعم
-        });
-
-        installBtn.addEventListener('click', async () => {
-            if (deferredPrompt) {
-                deferredPrompt.prompt();
-                const { outcome } = await deferredPrompt.userChoice;
-                if (outcome === 'accepted') {
-                    installBtn.style.display = 'none';
-                }
-                deferredPrompt = null;
-            }
-        });
-
-        fetchMatches();
-        setInterval(fetchMatches, 120000); // تحديث كل دقيقتين
-    </script>
-</body>
-                    </html>
-                    
+        <div id="profile-data" style="display:none; padding:15px; border-bottom:1px solid #333; background: #111;">
+            <p style="margin:5px 0; font-size: 14px;">مرحباً: <span id="u-name" style="color:white;"></span></p>
+            <p style="margin:5px 0; font-size: 14px;">ID الحساب: <span id="u-id" style="color:var(--main-red); font-weight:bold; font-family: monospace;"></span></p>
+            <p style="margin:5px 0; font-size: 14px;">رصيدك: <span id="u-coins" style="color:#00ff00; font-weight:
+                                                                 
