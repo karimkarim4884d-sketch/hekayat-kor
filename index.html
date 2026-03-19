@@ -43,8 +43,9 @@
             <div class="flex gap-3 overflow-x-auto mb-6 pb-2">
                 <button onclick="setTab('quran', this)" class="nav-tab active">🕋 قرآن كريم</button>
                 <button onclick="setTab('live', this)" class="nav-tab">⚽ بث مباشر</button>
-                <button onclick="setTab('ramadan', this)" class="nav-tab">🌙 رمضان 2026</button>
+                <button onclick="setTab('ramadan', this)" class="nav-tab">🌙 رمضان</button>
                 <button onclick="setTab('movies', this)" class="nav-tab">🎬 أفلام</button>
+                <button onclick="setTab('kids', this)" class="nav-tab">🧸 كرتون</button>
                 <button onclick="setTab('music', this)" class="nav-tab">🎵 أغاني</button>
             </div>
             <div id="contentGrid" class="grid grid-cols-2 sm:grid-cols-3 gap-4"></div>
@@ -68,8 +69,9 @@
             <select id="mCat" class="w-full p-4 mb-6 bg-slate-900 border border-slate-700 rounded-xl text-white text-right outline-none">
                 <option value="quran">القرآن الكريم</option>
                 <option value="live">بث مباشر</option>
-                <option value="ramadan">رمضان 2026</option>
+                <option value="ramadan">رمضان</option>
                 <option value="movies">أفلام</option>
+                <option value="kids">كرتون</option>
                 <option value="music">أغاني</option>
             </select>
             
@@ -95,7 +97,7 @@
     <div id="overlay" class="overlay" onclick="toggleSidebar()"></div>
 
     <script>
-        let db = JSON.parse(localStorage.getItem('kr_v9_db')) || [];
+        let db = JSON.parse(localStorage.getItem('kr_v10_db')) || [];
         let currentTab = 'quran';
         const hls = new Hls();
 
@@ -105,12 +107,10 @@
         };
 
         function checkAdmin() {
-            const u = document.getElementById('userInp').value;
-            const p = document.getElementById('passInp').value;
-            if(u === 'admin' && p === 'admin') {
+            if(document.getElementById('userInp').value === 'admin' && document.getElementById('passInp').value === 'admin') {
                 localStorage.setItem('kr_admin_logged', 'true');
                 showAddSection();
-            } else { alert("البيانات غلط يا كريم!"); }
+            } else { alert("البيانات غلط!"); }
         }
 
         function showAddSection() {
@@ -138,15 +138,15 @@
                 <div onclick="smartPlay('${i.url}', '${i.name}')" class="ostora-card">
                     <img src="${i.img || 'https://via.placeholder.com/300x450/1e293b/eab308?text=KR'}" class="w-full h-full object-cover opacity-40">
                     <div class="absolute inset-0 bg-gradient-to-t from-black flex flex-col justify-end p-3">
-                        <p class="text-[10px] font-black text-yellow-500 truncate uppercase tracking-tighter">${i.name}</p>
+                        <p class="text-[10px] font-black text-yellow-500 truncate uppercase">${i.name}</p>
                         <button onclick="event.stopPropagation(); deleteItem(${index})" class="text-red-500 text-[10px] mt-1"><i class="fas fa-trash"></i></button>
                     </div>
                 </div>
-            `).join('') : '<p class="col-span-3 text-center py-20 text-gray-700 text-[9px] font-black uppercase italic">لا يوجد محتوى في هذا القسم</p>';
+            `).join('') : '<p class="col-span-3 text-center py-20 text-gray-700 text-[9px] font-black uppercase italic">القسم فارغ</p>';
         }
 
         function deleteItem(index) {
-            if(confirm("حذف؟")) { db.splice(index, 1); localStorage.setItem('kr_v9_db', JSON.stringify(db)); render(); }
+            if(confirm("حذف؟")) { db.splice(index, 1); localStorage.setItem('kr_v10_db', JSON.stringify(db)); render(); }
         }
 
         function setTab(cat, btn) { currentTab = cat; document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active')); btn.classList.add('active'); render(); }
@@ -161,10 +161,11 @@
             const cat = document.getElementById('mCat').value;
             if(name && url) {
                 db.unshift({name, url, img, cat});
-                localStorage.setItem('kr_v9_db', JSON.stringify(db));
-                alert("تم الإضافة لقسم " + cat); render();
+                localStorage.setItem('kr_v10_db', JSON.stringify(db));
+                alert("تمت الإضافة!"); render();
             }
         }
     </script>
 </body>
-</html>
+                </html>
+    
