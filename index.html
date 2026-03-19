@@ -87,7 +87,7 @@
         <div class="text-center">
             <p class="text-xl font-black text-yellow-500 uppercase italic">KARIM KHALED</p>
             <div class="flex flex-col gap-3 mt-8">
-                <button onclick="openAdmin()" class="bg-yellow-500 text-black p-4 rounded-2xl text-sm font-black flex items-center justify-between">
+                <button onclick="openAdmin()" class="bg-yellow-500 text-black p-4 rounded-2xl text-sm font-black flex items-center justify-between shadow-xl">
                     <span>لوحة التحكم</span> <i class="fas fa-lock"></i>
                 </button>
             </div>
@@ -97,7 +97,7 @@
     <div id="overlay" class="overlay" onclick="toggleSidebar()"></div>
 
     <script>
-        let db = JSON.parse(localStorage.getItem('kr_v10_db')) || [];
+        let db = JSON.parse(localStorage.getItem('kr_v11_db')) || [];
         let currentTab = 'quran';
         const hls = new Hls();
 
@@ -110,7 +110,7 @@
             if(document.getElementById('userInp').value === 'admin' && document.getElementById('passInp').value === 'admin') {
                 localStorage.setItem('kr_admin_logged', 'true');
                 showAddSection();
-            } else { alert("البيانات غلط!"); }
+            } else { alert("البيانات غلط يا كريم!"); }
         }
 
         function showAddSection() {
@@ -142,11 +142,11 @@
                         <button onclick="event.stopPropagation(); deleteItem(${index})" class="text-red-500 text-[10px] mt-1"><i class="fas fa-trash"></i></button>
                     </div>
                 </div>
-            `).join('') : '<p class="col-span-3 text-center py-20 text-gray-700 text-[9px] font-black uppercase italic">القسم فارغ</p>';
+            `).join('') : '<p class="col-span-3 text-center py-20 text-gray-700 text-[9px] font-black uppercase italic">لا يوجد محتوى في هذا القسم</p>';
         }
 
         function deleteItem(index) {
-            if(confirm("حذف؟")) { db.splice(index, 1); localStorage.setItem('kr_v10_db', JSON.stringify(db)); render(); }
+            if(confirm("حذف؟")) { db.splice(index, 1); localStorage.setItem('kr_v11_db', JSON.stringify(db)); render(); }
         }
 
         function setTab(cat, btn) { currentTab = cat; document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active')); btn.classList.add('active'); render(); }
@@ -161,11 +161,11 @@
             const cat = document.getElementById('mCat').value;
             if(name && url) {
                 db.unshift({name, url, img, cat});
-                localStorage.setItem('kr_v10_db', JSON.stringify(db));
-                alert("تمت الإضافة!"); render();
+                localStorage.setItem('kr_v11_db', JSON.stringify(db));
+                alert("تم الإضافة لقسم " + cat); render();
             }
         }
     </script>
 </body>
-                </html>
+    </html>
     
