@@ -1,32 +1,137 @@
-// 1. دي الفانكشن اللي بتعرض الأفلام في الصفحة
-function renderMovies(moviesList) {
-    const container = document.getElementById('movies-container'); // اتأكد إن ده نفس الـ ID عندك
-    container.innerHTML = ''; // عشان يمسح القديم ويعرض الجديد
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KARIM KHALED APP</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root { --main: #ffcc00; --bg: #0b0d17; --card: #161b22; }
+        body { background: var(--bg); color: white; font-family: sans-serif; margin: 0; padding-bottom: 50px; }
+        
+        /* الهيدر العلوي */
+        .top-nav { display: grid; grid-template-columns: 1fr 1fr 1fr; background: #1a1a1a; border-bottom: 2px solid var(--main); }
+        .nav-item { padding: 12px; text-decoration: none; color: white; font-size: 12px; text-align: center; border-left: 1px solid #333; }
+        .nav-item i { color: var(--main); display: block; margin-bottom: 4px; }
 
-    moviesList.forEach(movie => {
-        // تصليح تلقائي لروابط ImgBB لو مش مباشرة
-        let finalUrl = movie.url;
-        if (finalUrl.includes('ibb.co') && !finalUrl.match(/\.(jpg|jpeg|png|gif)$/)) {
-            // محاولة بسيطة لتحويل الرابط لرابط مباشر لو نسيت
-            console.warn("انتبه: الرابط قد لا يكون مباشراً للفيلم:", movie.title);
+        /* اللوجو */
+        .header { text-align: center; padding: 20px; }
+        .logo { width: 70px; height: 70px; border: 3px solid var(--main); border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 22px; font-weight: bold; background: #222; color: var(--main); box-shadow: 0 0 15px var(--main); }
+
+        /* الأقسام */
+        .cats { display: flex; overflow-x: auto; padding: 10px; gap: 8px; }
+        .cat-btn { background: var(--card); border: 1px solid #333; color: white; padding: 8px 15px; border-radius: 20px; white-space: nowrap; cursor: pointer; }
+        .cat-btn:hover { border-color: var(--main); }
+
+        /* شبكة الأفلام */
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; padding: 15px; }
+        .item { background: var(--card); border-radius: 12px; overflow: hidden; position: relative; transition: 0.3s; border: 1px solid #222; }
+        .item img { width: 100%; height: 200px; object-fit: cover; }
+        .q-tag { position: absolute; top: 8px; left: 8px; background: var(--main); color: black; font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: bold; }
+        .y-tag { position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.8); font-size: 10px; padding: 2px 6px; border-radius: 4px; }
+        .title { padding: 8px; font-size: 13px; text-align: center; color: #eee; }
+
+        /* لوحة التحكم (مخفية) */
+        #admin-panel { display: none; background: #1a1a1a; padding: 20px; border: 2px solid var(--main); margin: 15px; border-radius: 15px; }
+        input, select { width: 100%; padding: 10px; margin-bottom: 10px; background: #333; border: 1px solid #444; color: white; border-radius: 5px; }
+        .save-btn { width: 100%; padding: 12px; background: var(--main); border: none; font-weight: bold; cursor: pointer; border-radius: 5px; }
+    </style>
+</head>
+<body>
+
+    <div class="top-nav">
+        <a href="https://wa.me/201040077271" class="nav-item"><i class="fab fa-whatsapp"></i> واتساب</a>
+        <a href="mailto:karimkarim4884d@gmail.com" class="nav-item"><i class="fas fa-envelope"></i> شكاوى</a>
+        <a href="javascript:void(0)" onclick="toggleAdmin()" class="nav-item"><i class="fas fa-plus-circle"></i> إضافة محتوى</a>
+    </div>
+
+    <div class="header">
+        <div class="logo" id="logo-text">KR</div>
+        <h2 id="name-text" style="color:var(--main); margin-top:10px;">KARIM KHALED</h2>
+    </div>
+
+    <div id="admin-panel">
+        <h3 style="text-align: center; color: var(--main);">لوحة التحكم السريعة</h3>
+        <input type="text" id="m-title" placeholder="اسم الفيلم / المحتوى">
+        <input type="text" id="m-img" placeholder="رابط الصورة (Direct Link)">
+        <input type="text" id="m-link" placeholder="رابط السيرفر / المشاهدة">
+        <select id="m-cat">
+            <option value="بث مباشر">📡 بث مباشر</option>
+            <option value="أفلام مصرية">🇪🇬 أفلام مصرية</option>
+            <option value="أفلام أكشن">🔥 أفلام أكشن</option>
+            <option value="قرآن كريم">📖 قرآن كريم</option>
+            <option value="كرتون">🧸 كرتون</option>
+            <option value="أغاني">🎵 أغاني</option>
+        </select>
+        <select id="m-year">
+            <script>for(let y=2026; y>=2020; y--) document.write(`<option value="${y}">${y}</option>`)</script>
+        </select>
+        <select id="m-quality">
+            <option value="4K">4K</option>
+            <option value="FHD">1080p</option>
+            <option value="HD">720p</option>
+        </select>
+        <button class="save-btn" onclick="addMovie()">✅ حفظ ونشر الآن</button>
+    </div>
+
+    <div class="cats">
+        <button class="cat-btn" onclick="filterItems('الكل')">الكل</button>
+        <button class="cat-btn" onclick="filterItems('بث مباشر')">بث مباشر</button>
+        <button class="cat-btn" onclick="filterItems('أفلام مصرية')">أفلام مصرية</button>
+        <button class="cat-btn" onclick="filterItems('قرآن كريم')">القرآن</button>
+    </div>
+
+    <div class="grid" id="main-grid">
+        </div>
+
+    <script>
+        let movies = JSON.parse(localStorage.getItem('myMovies')) || [];
+
+        function toggleAdmin() {
+            let panel = document.getElementById('admin-panel');
+            panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
         }
 
-        const movieCard = `
-            <div class="card" style="position: relative; margin: 10px;">
-                <img src="${finalUrl}" 
-                     alt="${movie.title}" 
-                     style="width: 100%; border-radius: 15px; display: block;"
-                     onerror="this.onerror=null; this.src='https://via.placeholder.com/300x450?text=Image+Error';">
-                
-                <div class="card-title" style="position: absolute; bottom: 10px; left: 0; right: 0; text-align: center; color: yellow;">
-                    ${movie.title}
-                </div>
-                
-                <button onclick="deleteMovie('${movie.id}')" style="background: none; border: none; color: red; cursor: pointer;">
-                    🗑️
-                </button>
-            </div>
-        `;
-        container.insertAdjacentHTML('beforeend', movieCard);
-    });
-}
+        function addMovie() {
+            const newMovie = {
+                id: Date.now(),
+                title: document.getElementById('m-title').value,
+                img: document.getElementById('m-img').value,
+                link: document.getElementById('m-link').value,
+                cat: document.getElementById('m-cat').value,
+                year: document.getElementById('m-year').value,
+                quality: document.getElementById('m-quality').value
+            };
+
+            if(!newMovie.title || !newMovie.img) return alert("املا البيانات يا كيمو!");
+
+            movies.push(newMovie);
+            localStorage.setItem('myMovies', JSON.stringify(movies));
+            render();
+            toggleAdmin();
+            alert("تمت الإضافة بنجاح!");
+        }
+
+        function render(filter = 'الكل') {
+            const grid = document.getElementById('main-grid');
+            grid.innerHTML = '';
+            
+            movies.filter(m => filter === 'الكل' || m.cat === filter).forEach(m => {
+                grid.innerHTML += `
+                    <div class="item" onclick="window.location.href='${m.link}'">
+                        <span class="q-tag">${m.quality}</span>
+                        <span class="y-tag">${m.year}</span>
+                        <img src="${m.img}" onerror="this.src='https://via.placeholder.com/150x200?text=Error+Link'">
+                        <div class="title">${m.title}</div>
+                    </div>
+                `;
+            });
+        }
+
+        function filterItems(c) { render(c); }
+
+        // تشغيل عند الفتح
+        window.onload = render;
+    </script>
+</body>
+</html>
