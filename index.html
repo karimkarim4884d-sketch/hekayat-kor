@@ -3,97 +3,115 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KARIM KHALED APP</title>
+    <title>KARIM KHALED - ZACK CINEMA</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root { --main: #ffcc00; --bg: #0b0d17; --card: #161b22; }
-        body { background: var(--bg); color: white; font-family: sans-serif; margin: 0; padding-bottom: 50px; }
+        body { background: var(--bg); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; padding-bottom: 30px; }
         
-        /* الهيدر العلوي */
-        .top-nav { display: grid; grid-template-columns: 1fr 1fr 1fr; background: #1a1a1a; border-bottom: 2px solid var(--main); }
-        .nav-item { padding: 12px; text-decoration: none; color: white; font-size: 12px; text-align: center; border-left: 1px solid #333; }
-        .nav-item i { color: var(--main); display: block; margin-bottom: 4px; }
+        /* 1. الثلاثة أقسام العلوية (شروطك بالحرف) */
+        .top-nav { display: grid; grid-template-columns: 1fr 1fr 1fr; background: #1a1a1a; border-bottom: 2px solid var(--main); position: sticky; top: 0; z-index: 100; }
+        .nav-item { padding: 12px; text-decoration: none; color: white; font-size: 11px; text-align: center; border-left: 1px solid #333; transition: 0.3s; }
+        .nav-item:hover { background: #252525; }
+        .nav-item i { color: var(--main); display: block; margin-bottom: 4px; font-size: 16px; }
 
-        /* اللوجو */
-        .header { text-align: center; padding: 20px; }
-        .logo { width: 70px; height: 70px; border: 3px solid var(--main); border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 22px; font-weight: bold; background: #222; color: var(--main); box-shadow: 0 0 15px var(--main); }
+        /* اللوجو والاسم */
+        .header { text-align: center; padding: 25px 10px; background: linear-gradient(to bottom, #1a1a1a, var(--bg)); }
+        .logo { width: 75px; height: 75px; border: 3px solid var(--main); border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 26px; font-weight: bold; background: #222; color: var(--main); box-shadow: 0 0 20px rgba(255, 204, 0, 0.3); }
 
-        /* الأقسام */
-        .cats { display: flex; overflow-x: auto; padding: 10px; gap: 8px; }
-        .cat-btn { background: var(--card); border: 1px solid #333; color: white; padding: 8px 15px; border-radius: 20px; white-space: nowrap; cursor: pointer; }
-        .cat-btn:hover { border-color: var(--main); }
+        /* الأقسام (Filter) */
+        .cats-container { overflow-x: auto; padding: 10px; display: flex; gap: 10px; scrollbar-width: none; }
+        .cat-btn { background: var(--card); border: 1px solid #333; color: white; padding: 10px 20px; border-radius: 25px; white-space: nowrap; cursor: pointer; font-size: 14px; min-width: 100px; }
+        .cat-btn.active { background: var(--main); color: black; font-weight: bold; border-color: var(--main); }
 
-        /* شبكة الأفلام */
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; padding: 15px; }
-        .item { background: var(--card); border-radius: 12px; overflow: hidden; position: relative; transition: 0.3s; border: 1px solid #222; }
-        .item img { width: 100%; height: 200px; object-fit: cover; }
-        .q-tag { position: absolute; top: 8px; left: 8px; background: var(--main); color: black; font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: bold; }
-        .y-tag { position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.8); font-size: 10px; padding: 2px 6px; border-radius: 4px; }
-        .title { padding: 8px; font-size: 13px; text-align: center; color: #eee; }
+        /* شبكة المحتوى والجودة والسنة */
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(145px, 1fr)); gap: 15px; padding: 15px; }
+        .item { background: var(--card); border-radius: 15px; overflow: hidden; position: relative; border: 1px solid #222; transition: 0.3s; cursor: pointer; }
+        .item:hover { transform: translateY(-5px); border-color: var(--main); }
+        .item img { width: 100%; height: 210px; object-fit: cover; }
+        
+        .q-tag { position: absolute; top: 8px; left: 8px; background: var(--main); color: black; font-size: 10px; padding: 2px 7px; border-radius: 5px; font-weight: bold; z-index: 2; }
+        .y-tag { position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.8); font-size: 10px; padding: 2px 7px; border-radius: 5px; z-index: 2; }
+        .title { padding: 10px; font-size: 13px; text-align: center; font-weight: 500; }
 
-        /* لوحة التحكم (مخفية) */
-        #admin-panel { display: none; background: #1a1a1a; padding: 20px; border: 2px solid var(--main); margin: 15px; border-radius: 15px; }
-        input, select { width: 100%; padding: 10px; margin-bottom: 10px; background: #333; border: 1px solid #444; color: white; border-radius: 5px; }
-        .save-btn { width: 100%; padding: 12px; background: var(--main); border: none; font-weight: bold; cursor: pointer; border-radius: 5px; }
+        /* لوحة التحكم (السرية) */
+        #admin-panel { display: none; background: #1a1a1a; padding: 20px; border: 2px solid var(--main); margin: 15px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .admin-input { width: 100%; padding: 12px; margin-bottom: 12px; background: #252525; border: 1px solid #444; color: white; border-radius: 8px; box-sizing: border-box; }
+        .save-btn { width: 100%; padding: 15px; background: var(--main); border: none; font-weight: bold; font-size: 16px; cursor: pointer; border-radius: 8px; transition: 0.2s; }
+        .save-btn:active { transform: scale(0.98); }
     </style>
 </head>
 <body>
 
     <div class="top-nav">
-        <a href="https://wa.me/201040077271" class="nav-item"><i class="fab fa-whatsapp"></i> واتساب</a>
-        <a href="mailto:karimkarim4884d@gmail.com" class="nav-item"><i class="fas fa-envelope"></i> شكاوى</a>
-        <a href="javascript:void(0)" onclick="toggleAdmin()" class="nav-item"><i class="fas fa-plus-circle"></i> إضافة محتوى</a>
+        <a href="https://wa.me/201040077271" class="nav-item">
+            <i class="fab fa-whatsapp"></i> خدمة العملاء
+        </a>
+        <a href="mailto:karimkarim4884d@gmail.com" class="nav-item">
+            <i class="fas fa-envelope"></i> الشكاوى
+        </a>
+        <a href="javascript:void(0)" onclick="toggleAdmin()" class="nav-item">
+            <i class="fas fa-cog"></i> لوحة التحكم
+        </a>
     </div>
 
     <div class="header">
-        <div class="logo" id="logo-text">KR</div>
-        <h2 id="name-text" style="color:var(--main); margin-top:10px;">KARIM KHALED</h2>
+        <div class="logo" id="main-logo">KR</div>
+        <h2 style="margin-top:15px; letter-spacing: 1px;" id="main-title">KARIM KHALED</h2>
+        <p style="color: #888; font-size: 12px; margin-top: -10px;">ZACK CINEMA ENGINE</p>
     </div>
 
     <div id="admin-panel">
-        <h3 style="text-align: center; color: var(--main);">لوحة التحكم السريعة</h3>
-        <input type="text" id="m-title" placeholder="اسم الفيلم / المحتوى">
-        <input type="text" id="m-img" placeholder="رابط الصورة (Direct Link)">
-        <input type="text" id="m-link" placeholder="رابط السيرفر / المشاهدة">
-        <select id="m-cat">
+        <h3 style="text-align: center; color: var(--main); margin-bottom: 20px;">إضافة سيرفر جديد</h3>
+        <input type="text" id="m-title" class="admin-input" placeholder="اسم المحتوى (مثال: فيلم كذا)">
+        <input type="text" id="m-img" class="admin-input" placeholder="رابط البوستر (Direct Link)">
+        <input type="text" id="m-link" class="admin-input" placeholder="رابط السيرفر أو البث المباشر">
+        <select id="m-cat" class="admin-input">
             <option value="بث مباشر">📡 بث مباشر</option>
             <option value="أفلام مصرية">🇪🇬 أفلام مصرية</option>
             <option value="أفلام أكشن">🔥 أفلام أكشن</option>
-            <option value="قرآن كريم">📖 قرآن كريم</option>
+            <option value="قرآن كريم">📖 القرآن الكريم</option>
             <option value="كرتون">🧸 كرتون</option>
             <option value="أغاني">🎵 أغاني</option>
         </select>
-        <select id="m-year">
-            <script>for(let y=2026; y>=2020; y--) document.write(`<option value="${y}">${y}</option>`)</script>
+        <select id="m-year" class="admin-input">
+            <option value="2026">2026</option><option value="2025">2025</option><option value="2024">2024</option>
+            <option value="2023">2023</option><option value="2022">2022</option><option value="2021">2021</option>
+            <option value="2020">2020</option>
         </select>
-        <select id="m-quality">
-            <option value="4K">4K</option>
-            <option value="FHD">1080p</option>
-            <option value="HD">720p</option>
+        <select id="m-quality" class="admin-input">
+            <option value="4K">الجودة: 4K</option>
+            <option value="FHD">الجودة: 1080p</option>
+            <option value="HD">الجودة: 720p</option>
         </select>
-        <button class="save-btn" onclick="addMovie()">✅ حفظ ونشر الآن</button>
+        <button class="save-btn" onclick="addMovie()">نشر على السيرفر الآن</button>
     </div>
 
-    <div class="cats">
-        <button class="cat-btn" onclick="filterItems('الكل')">الكل</button>
-        <button class="cat-btn" onclick="filterItems('بث مباشر')">بث مباشر</button>
-        <button class="cat-btn" onclick="filterItems('أفلام مصرية')">أفلام مصرية</button>
-        <button class="cat-btn" onclick="filterItems('قرآن كريم')">القرآن</button>
+    <div class="cats-container">
+        <button class="cat-btn active" onclick="filterItems('الكل', this)">الكل</button>
+        <button class="cat-btn" onclick="filterItems('بث مباشر', this)">بث مباشر</button>
+        <button class="cat-btn" onclick="filterItems('أفلام مصرية', this)">أفلام مصرية</button>
+        <button class="cat-btn" onclick="filterItems('أفلام أكشن', this)">أكشن</button>
+        <button class="cat-btn" onclick="filterItems('قرآن كريم', this)">القرآن</button>
+        <button class="cat-btn" onclick="filterItems('كرتون', this)">كرتون</button>
+        <button class="cat-btn" onclick="filterItems('أغاني', this)">أغاني</button>
     </div>
 
     <div class="grid" id="main-grid">
         </div>
 
     <script>
-        let movies = JSON.parse(localStorage.getItem('myMovies')) || [];
+        // مصفوفة البيانات (لو عايز تربط فايربيز استبدل دي بـ Fetch)
+        let movies = JSON.parse(localStorage.getItem('zack_data')) || [];
 
         function toggleAdmin() {
-            let panel = document.getElementById('admin-panel');
+            const panel = document.getElementById('admin-panel');
             panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
+            panel.scrollIntoView({behavior: "smooth"});
         }
 
         function addMovie() {
-            const newMovie = {
+            const item = {
                 id: Date.now(),
                 title: document.getElementById('m-title').value,
                 img: document.getElementById('m-img').value,
@@ -103,35 +121,46 @@
                 quality: document.getElementById('m-quality').value
             };
 
-            if(!newMovie.title || !newMovie.img) return alert("املا البيانات يا كيمو!");
+            if(!item.title || !item.img || !item.link) return alert("يا كيمو املأ البيانات كاملة!");
 
-            movies.push(newMovie);
-            localStorage.setItem('myMovies', JSON.stringify(movies));
+            movies.unshift(item); // إضافة في البداية
+            localStorage.setItem('zack_data', JSON.stringify(movies));
             render();
             toggleAdmin();
-            alert("تمت الإضافة بنجاح!");
+            alert("تم النشر بنجاح!");
         }
 
         function render(filter = 'الكل') {
             const grid = document.getElementById('main-grid');
             grid.innerHTML = '';
             
-            movies.filter(m => filter === 'الكل' || m.cat === filter).forEach(m => {
+            const filtered = movies.filter(m => filter === 'الكل' || m.cat === filter);
+            
+            if(filtered.length === 0) {
+                grid.innerHTML = '<p style="grid-column: 1/-1; text-align:center; color:#666; padding:40px;">لا يوجد محتوى في هذا القسم حالياً</p>';
+                return;
+            }
+
+            filtered.forEach(m => {
                 grid.innerHTML += `
                     <div class="item" onclick="window.location.href='${m.link}'">
                         <span class="q-tag">${m.quality}</span>
                         <span class="y-tag">${m.year}</span>
-                        <img src="${m.img}" onerror="this.src='https://via.placeholder.com/150x200?text=Error+Link'">
+                        <img src="${m.img}" onerror="this.src='https://via.placeholder.com/300x450?text=Image+Error'">
                         <div class="title">${m.title}</div>
                     </div>
                 `;
             });
         }
 
-        function filterItems(c) { render(c); }
+        function filterItems(category, btn) {
+            document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            render(category);
+        }
 
-        // تشغيل عند الفتح
         window.onload = render;
     </script>
 </body>
-</html>
+                                                                                   </html>
+                                                                                   
