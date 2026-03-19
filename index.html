@@ -3,110 +3,168 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zack Cinema | حكايات كورة</title>
+    <title>Karim Khaled | KR Zack Cinema</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body { background-color: #0f172a; color: white; font-family: sans-serif; transition: all 0.3s ease; }
-        .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
-        .zack-gradient { background: linear-gradient(90deg, #3b82f6, #8b5cf6); }
-        .card-hover:hover { transform: translateY(-5px); border-color: #3b82f6; }
+        :root { --gold: #eab308; --dark-bg: #020617; }
+        body { background: var(--dark-bg); color: white; font-family: 'Segoe UI', sans-serif; overflow-x: hidden; }
+        .kr-logo { width: 48px; height: 48px; border-radius: 50%; border: 2px solid var(--gold); object-fit: cover; }
+        .sidebar { position: fixed; top: 0; right: -100%; width: 290px; height: 100%; background: #0f172a; transition: 0.5s; z-index: 200; border-left: 2px solid var(--gold); }
+        .sidebar.active { right: 0; }
+        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: none; z-index: 150; backdrop-filter: blur(4px); }
+        .video-box { position: sticky; top: 0; z-index: 100; background: #000; border-bottom: 3px solid var(--gold); width: 100%; aspect-ratio: 16/9; }
+        video, iframe { width: 100%; height: 100%; background: #000; }
+        .ostora-card { background: #1e293b; border-radius: 15px; overflow: hidden; transition: 0.4s; cursor: pointer; border: 1px solid rgba(234, 179, 8, 0.1); position: relative; height: 170px; }
+        .nav-tab { background: #1e293b; color: #94a3b8; padding: 12px 18px; border-radius: 12px; font-size: 11px; font-weight: bold; white-space: nowrap; transition: 0.3s; }
+        .nav-tab.active { background: var(--gold); color: #000; box-shadow: 0 0 15px rgba(234, 179, 8, 0.4); }
+        .admin-modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #0f172a; padding: 30px; border-radius: 25px; border: 2px solid var(--gold); z-index: 300; display: none; width: 92%; max-width: 420px; }
+        ::-webkit-scrollbar { display: none; }
     </style>
 </head>
-<body class="min-h-screen">
+<body class="max-w-2xl mx-auto pb-24">
 
-    <nav class="glass p-4 sticky top-0 z-50 flex justify-between items-center">
-        <h1 class="text-2xl font-bold zack-gradient bg-clip-text text-transparent">Zack Cinema</h1>
-        <button id="login-btn" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg font-bold transition">دخول بجوجل</button>
-    </nav>
-
-    <main class="p-6 max-w-4xl mx-auto text-center">
-        <div id="user-info" class="glass p-6 rounded-2xl mb-8 hidden shadow-xl">
-            <img id="user-img" src="" class="w-20 h-20 rounded-full mx-auto border-4 border-blue-500 mb-3 shadow-lg">
-            <h2 id="user-name" class="text-xl font-bold"></h2>
-            <p id="zack-id" class="text-blue-400 font-mono mt-2 text-lg font-bold"></p>
-            <div class="mt-4 flex justify-center gap-4">
-                <div class="bg-slate-800 p-3 rounded-xl min-w-[100px]">
-                    <p class="text-gray-400 text-xs">نقاطك</p>
-                    <p id="user-points" class="text-yellow-400 font-bold text-xl">100</p>
-                </div>
-            </div>
+    <div id="mainApp">
+        <div class="video-box" id="mediaPlayer">
+            <video id="vPlayer" controls autoplay playsinline class="w-full h-full"></video>
         </div>
 
-        <div class="mt-6">
-            <h3 class="text-xl font-bold mb-6 flex items-center justify-center gap-2">
-                <i class="fas fa-play-circle text-red-500"></i> حصريات Zack Cinema
-            </h3>
-            <div class="grid gap-4" id="content-list">
-                <div class="glass p-4 rounded-xl flex justify-between items-center card-hover transition cursor-pointer border-r-4 border-blue-500">
-                    <div class="flex items-center gap-3">
-                        <i class="fas fa-futbol text-green-500 text-xl"></i>
-                        <span class="font-semibold text-right text-sm">بث مباشر: مباراة اليوم</span>
+        <div class="p-4 bg-[#0f172a] flex justify-between items-center border-b border-yellow-500/20">
+            <button onclick="toggleSidebar()" class="text-yellow-500 text-2xl"><i class="fas fa-bars"></i></button>
+            <div class="text-center">
+                <h1 class="text-[16px] font-black text-yellow-500 italic uppercase">KARIM KHALED</h1>
+                <p id="streamName" class="text-[9px] text-gray-500 font-bold uppercase">Zack Cinema Engine</p>
+            </div>
+            <img src="https://raw.githubusercontent.com/ZackCinema/ZK/main/ZK.png" class="kr-logo">
+        </div>
+
+        <div class="p-4">
+            <div class="flex gap-3 overflow-x-auto mb-6 pb-2">
+                <button onclick="setTab('quran', this)" class="nav-tab active">🕋 قرآن كريم</button>
+                <button onclick="setTab('live', this)" class="nav-tab">⚽ بث مباشر</button>
+                <button onclick="setTab('ramadan', this)" class="nav-tab">🌙 رمضان 2026</button>
+                <button onclick="setTab('movies', this)" class="nav-tab">🎬 أفلام</button>
+                <button onclick="setTab('music', this)" class="nav-tab">🎵 أغاني</button>
+            </div>
+            <div id="contentGrid" class="grid grid-cols-2 sm:grid-cols-3 gap-4"></div>
+        </div>
+    </div>
+
+    <div id="adminModal" class="admin-modal">
+        <h3 class="text-center font-black mb-6 text-yellow-500 text-xl uppercase italic">KR ADMIN ACCESS</h3>
+        
+        <div id="loginSection">
+            <input type="text" id="userInp" placeholder="اسم المستخدم" class="w-full p-4 mb-3 bg-slate-900 border border-slate-700 rounded-xl text-white text-center outline-none">
+            <input type="password" id="passInp" placeholder="كلمة المرور" class="w-full p-4 mb-6 bg-slate-900 border border-slate-700 rounded-xl text-white text-center outline-none">
+            <button onclick="checkAdmin()" class="w-full bg-yellow-500 text-black p-4 rounded-xl font-black uppercase">دخول وحفظ</button>
+        </div>
+
+        <div id="addSection" class="hidden">
+            <input type="text" id="mName" placeholder="اسم المحتوى" class="w-full p-4 mb-3 bg-slate-900 border border-slate-700 rounded-xl text-white text-right outline-none">
+            <input type="text" id="mUrl" placeholder="رابط السيرفر" class="w-full p-4 mb-3 bg-slate-900 border border-slate-700 rounded-xl text-white text-right outline-none">
+            <input type="text" id="mImg" placeholder="رابط البوستر" class="w-full p-4 mb-3 bg-slate-900 border border-slate-700 rounded-xl text-white text-right outline-none">
+            
+            <select id="mCat" class="w-full p-4 mb-6 bg-slate-900 border border-slate-700 rounded-xl text-white text-right outline-none">
+                <option value="quran">القرآن الكريم</option>
+                <option value="live">بث مباشر</option>
+                <option value="ramadan">رمضان 2026</option>
+                <option value="movies">أفلام</option>
+                <option value="music">أغاني</option>
+            </select>
+            
+            <div class="flex gap-3">
+                <button onclick="addItem()" class="flex-1 bg-green-600 p-4 rounded-xl text-white font-black uppercase">إضافة</button>
+                <button onclick="closeAdmin()" class="flex-1 bg-red-600 p-4 rounded-xl text-white font-black uppercase">إلغاء</button>
+            </div>
+            <button onclick="logoutAdmin()" class="w-full mt-4 text-gray-500 text-[9px] uppercase font-bold italic">تسجيل خروج</button>
+        </div>
+    </div>
+
+    <div id="sidebar" class="sidebar p-8 flex flex-col justify-between">
+        <div class="text-center">
+            <p class="text-xl font-black text-yellow-500 uppercase italic">KARIM KHALED</p>
+            <div class="flex flex-col gap-3 mt-8">
+                <button onclick="openAdmin()" class="bg-yellow-500 text-black p-4 rounded-2xl text-sm font-black flex items-center justify-between">
+                    <span>لوحة التحكم</span> <i class="fas fa-lock"></i>
+                </button>
+            </div>
+        </div>
+        <button onclick="toggleSidebar()" class="w-full p-4 bg-red-600/10 text-red-500 rounded-2xl text-[10px] font-black uppercase">إغلاق</button>
+    </div>
+    <div id="overlay" class="overlay" onclick="toggleSidebar()"></div>
+
+    <script>
+        let db = JSON.parse(localStorage.getItem('kr_v9_db')) || [];
+        let currentTab = 'quran';
+        const hls = new Hls();
+
+        window.onload = () => {
+            render();
+            if(localStorage.getItem('kr_admin_logged') === 'true') { showAddSection(); }
+        };
+
+        function checkAdmin() {
+            const u = document.getElementById('userInp').value;
+            const p = document.getElementById('passInp').value;
+            if(u === 'admin' && p === 'admin') {
+                localStorage.setItem('kr_admin_logged', 'true');
+                showAddSection();
+            } else { alert("البيانات غلط يا كريم!"); }
+        }
+
+        function showAddSection() {
+            document.getElementById('loginSection').classList.add('hidden');
+            document.getElementById('addSection').classList.remove('hidden');
+        }
+
+        function logoutAdmin() { localStorage.removeItem('kr_admin_logged'); location.reload(); }
+
+        function smartPlay(url, name) {
+            document.getElementById('streamName').innerText = "PLAYING: " + name;
+            const container = document.getElementById('mediaPlayer');
+            if (url.includes('.m3u8') || url.includes('.mp4')) {
+                container.innerHTML = '<video id="vPlayer" controls autoplay playsinline class="w-full h-full"></video>';
+                const video = document.getElementById('vPlayer');
+                if (Hls.isSupported()) { hls.loadSource(url); hls.attachMedia(video); hls.on(Hls.Events.MANIFEST_PARSED, () => video.play()); }
+                else { video.src = url; video.play(); }
+            } else { container.innerHTML = `<iframe src="${url}" frameborder="0" allowfullscreen allow="autoplay"></iframe>`; }
+        }
+
+        function render() {
+            const grid = document.getElementById('contentGrid');
+            const items = db.filter(i => i.cat === currentTab);
+            grid.innerHTML = items.length ? items.map((i, index) => `
+                <div onclick="smartPlay('${i.url}', '${i.name}')" class="ostora-card">
+                    <img src="${i.img || 'https://via.placeholder.com/300x450/1e293b/eab308?text=KR'}" class="w-full h-full object-cover opacity-40">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black flex flex-col justify-end p-3">
+                        <p class="text-[10px] font-black text-yellow-500 truncate uppercase tracking-tighter">${i.name}</p>
+                        <button onclick="event.stopPropagation(); deleteItem(${index})" class="text-red-500 text-[10px] mt-1"><i class="fas fa-trash"></i></button>
                     </div>
-                    <span class="bg-red-600 px-2 py-1 rounded text-xs animate-pulse">LIVE</span>
                 </div>
-            </div>
-        </div>
-    </main>
+            `).join('') : '<p class="col-span-3 text-center py-20 text-gray-700 text-[9px] font-black uppercase italic">لا يوجد محتوى في هذا القسم</p>';
+        }
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        function deleteItem(index) {
+            if(confirm("حذف؟")) { db.splice(index, 1); localStorage.setItem('kr_v9_db', JSON.stringify(db)); render(); }
+        }
 
-        // تم استخدام الـ API Key من صورك يا بطل
-        const firebaseConfig = {
-            apiKey: "AIzaSyB-m9eB_ZkH6e8-YourRealKeyHere", 
-            authDomain: "zack-cinema.firebaseapp.com",
-            projectId: "zack-cinema",
-            storageBucket: "zack-cinema.appspot.com",
-            messagingSenderId: "364303491410",
-            appId: "1:364303491410:web:96e838e4a9e87510793138"
-        };
+        function setTab(cat, btn) { currentTab = cat; document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active')); btn.classList.add('active'); render(); }
+        function openAdmin() { document.getElementById('adminModal').style.display = 'block'; toggleSidebar(); }
+        function closeAdmin() { document.getElementById('adminModal').style.display = 'none'; }
+        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('active'); document.getElementById('overlay').style.display = document.getElementById('sidebar').classList.contains('active') ? 'block' : 'none'; }
 
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-        const provider = new GoogleAuthProvider();
-
-        const loginBtn = document.getElementById('login-btn');
-
-        loginBtn.onclick = async () => {
-            try {
-                const result = await signInWithPopup(auth, provider);
-                const user = result.user;
-                const userRef = doc(db, "users", user.uid);
-                const snap = await getDoc(userRef);
-                
-                if (!snap.exists()) {
-                    await setDoc(userRef, {
-                        name: user.displayName,
-                        points: 100,
-                        zackId: "ZACK-" + Math.floor(1000 + Math.random() * 9000)
-                    });
-                }
-                location.reload();
-            } catch (e) {
-                console.error(e);
-                alert("تأكد من تفعيل Google Auth في Firebase Console");
+        function addItem() {
+            const name = document.getElementById('mName').value;
+            const url = document.getElementById('mUrl').value;
+            const img = document.getElementById('mImg').value;
+            const cat = document.getElementById('mCat').value;
+            if(name && url) {
+                db.unshift({name, url, img, cat});
+                localStorage.setItem('kr_v9_db', JSON.stringify(db));
+                alert("تم الإضافة لقسم " + cat); render();
             }
-        };
-
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                const snap = await getDoc(doc(db, "users", user.uid));
-                if (snap.exists()) {
-                    const data = snap.data();
-                    loginBtn.classList.add('hidden');
-                    document.getElementById('user-info').classList.remove('hidden');
-                    document.getElementById('user-name').innerText = user.displayName;
-                    document.getElementById('user-img').src = user.photoURL;
-                    document.getElementById('zack-id').innerText = "ID: " + data.zackId;
-                    document.getElementById('user-points').innerText = data.points;
-                }
-            }
-        });
+        }
     </script>
 </body>
-  </html>
-  
+</html>
