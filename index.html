@@ -10,106 +10,126 @@
     <style>
         :root { --gold: #eab308; --dark-bg: #020617; }
         body { background: var(--dark-bg); color: white; font-family: 'Segoe UI', sans-serif; overflow-x: hidden; }
-        .kr-logo { width: 48px; height: 48px; border-radius: 50%; border: 2px solid var(--gold); object-fit: cover; }
-        .sidebar { position: fixed; top: 0; right: -100%; width: 290px; height: 100%; background: #0f172a; transition: 0.5s; z-index: 200; border-left: 2px solid var(--gold); }
+        .kr-logo { width: 45px; height: 45px; border-radius: 50%; border: 2px solid var(--gold); }
+        
+        /* تصميم المنيو الجانبي */
+        .sidebar { position: fixed; top: 0; right: -100%; width: 300px; height: 100%; background: #0f172a; transition: 0.5s; z-index: 200; border-left: 3px solid var(--gold); padding: 30px 20px; }
         .sidebar.active { right: 0; }
         .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: none; z-index: 150; backdrop-filter: blur(4px); }
-        .video-box { position: sticky; top: 0; z-index: 100; background: #000; border-bottom: 3px solid var(--gold); width: 100%; aspect-ratio: 16/9; }
-        video, iframe { width: 100%; height: 100%; background: #000; }
-        .ostora-card { background: #1e293b; border-radius: 15px; overflow: hidden; transition: 0.4s; cursor: pointer; border: 1px solid rgba(234, 179, 8, 0.1); position: relative; height: 170px; }
-        /* تعديل شريط الأقسام ليظهر بالكامل */
-        .nav-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 20px; }
-        .nav-tab { background: #1e293b; color: #94a3b8; padding: 10px 5px; border-radius: 10px; font-size: 10px; font-weight: bold; text-align: center; transition: 0.3s; border: 1px solid rgba(255,255,255,0.05); }
-        .nav-tab.active { background: var(--gold); color: #000; box-shadow: 0 0 15px rgba(234, 179, 8, 0.4); border-color: transparent; }
-        .admin-modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #0f172a; padding: 30px; border-radius: 25px; border: 2px solid var(--gold); z-index: 300; display: none; width: 92%; max-width: 420px; }
+        
+        .video-box { position: sticky; top: 0; z-index: 100; background: #000; border-bottom: 2px solid var(--gold); width: 100%; aspect-ratio: 16/9; }
+        
+        /* شبكة الأقسام */
+        .services-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; padding: 15px; }
+        .service-btn { background: #1e293b; color: #94a3b8; padding: 10px 2px; border-radius: 10px; font-size: 10px; font-weight: 900; text-align: center; border: 1px solid rgba(255,255,255,0.05); }
+        .service-btn.active { background: var(--gold); color: #000; box-shadow: 0 0 15px rgba(234, 179, 8, 0.4); }
+        
+        /* أزرار التواصل داخل المنيو */
+        .menu-link { display: flex; align-items: center; gap: 15px; padding: 15px; background: rgba(255,255,255,0.03); border-radius: 15px; margin-bottom: 10px; font-weight: bold; transition: 0.3s; border: 1px solid rgba(255,255,255,0.05); }
+        .menu-link:hover { background: rgba(234, 179, 8, 0.1); border-color: var(--gold); }
+        
+        .admin-modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #0f172a; padding: 30px; border-radius: 25px; border: 2px solid var(--gold); z-index: 300; display: none; width: 90%; max-width: 400px; }
     </style>
 </head>
-<body class="max-w-2xl mx-auto pb-24">
+<body class="max-w-2xl mx-auto pb-10">
 
     <div id="mainApp">
         <div class="video-box" id="mediaPlayer">
             <video id="vPlayer" controls autoplay playsinline class="w-full h-full"></video>
         </div>
 
-        <div class="p-4 bg-[#0f172a] flex justify-between items-center border-b border-yellow-500/20 shadow-2xl">
-            <button onclick="toggleSidebar()" class="text-yellow-500 text-2xl"><i class="fas fa-bars"></i></button>
+        <div class="p-4 flex justify-between items-center bg-[#0f172a]/80 backdrop-blur-md">
+            <button onclick="toggleSidebar()" class="text-yellow-500 text-3xl"><i class="fas fa-bars-staggered"></i></button>
             <div class="text-center">
-                <h1 class="text-[16px] font-black text-yellow-500 italic uppercase">KARIM KHALED</h1>
-                <p id="streamName" class="text-[9px] text-gray-500 font-bold uppercase">Zack Cinema Engine</p>
+                <h1 class="text-lg font-black text-yellow-500 italic uppercase">KARIM KHALED</h1>
+                <p id="streamName" class="text-[8px] text-gray-500 font-bold uppercase tracking-widest">Zack Cinema Engine</p>
             </div>
             <img src="https://raw.githubusercontent.com/ZackCinema/ZK/main/ZK.png" class="kr-logo">
         </div>
 
-        <div class="p-4">
-            <div class="nav-grid">
-                <button onclick="setTab('quran', this)" class="nav-tab active">🕋 قرآن</button>
-                <button onclick="setTab('live', this)" class="nav-tab">⚽ مباشر</button>
-                <button onclick="setTab('ramadan', this)" class="nav-tab">🌙 رمضان</button>
-                <button onclick="setTab('movies', this)" class="nav-tab">🎬 أفلام</button>
-                <button onclick="setTab('kids', this)" class="nav-tab">🧸 كرتون</button>
-                <button onclick="setTab('music', this)" class="nav-tab">🎵 أغاني</button>
-            </div>
-            <div id="contentGrid" class="grid grid-cols-2 sm:grid-cols-3 gap-4"></div>
+        <div class="services-grid">
+            <button onclick="setTab('quran', this)" class="service-btn active">🕋 قرآن</button>
+            <button onclick="setTab('live', this)" class="service-btn">⚽ مباشر</button>
+            <button onclick="setTab('ramadan', this)" class="service-btn">🌙 رمضان</button>
+            <button onclick="setTab('movies', this)" class="service-btn">🎬 أفلام</button>
+            <button onclick="setTab('kids', this)" class="service-btn">🧸 كرتون</button>
+            <button onclick="setTab('music', this)" class="service-btn">🎵 أغاني</button>
         </div>
+
+        <div id="contentGrid" class="grid grid-cols-2 gap-4 p-4"></div>
     </div>
 
+    <div id="sidebar" class="sidebar">
+        <div class="flex justify-between items-center mb-10 border-b border-white/5 pb-4">
+            <span class="font-black text-yellow-500 uppercase italic">القائمة الرئيسية</span>
+            <button onclick="toggleSidebar()" class="text-red-500 text-2xl"><i class="fas fa-times"></i></button>
+        </div>
+
+        <a href="https://wa.me/201040077271" class="menu-link text-green-500">
+            <i class="fab fa-whatsapp text-2xl"></i>
+            <div class="flex flex-col">
+                <span class="text-[10px] text-gray-500 font-bold">تواصل عبر واتساب</span>
+                <span class="text-sm">01040077271</span>
+            </div>
+        </a>
+
+        <a href="mailto:karimkarim4884d@gmail.com" class="menu-link text-blue-400">
+            <i class="fas fa-envelope text-2xl"></i>
+            <div class="flex flex-col">
+                <span class="text-[10px] text-gray-500 font-bold">البريد الإلكتروني</span>
+                <span class="text-[11px] truncate">karimkarim4884d@gmail.com</span>
+            </div>
+        </a>
+
+        <button onclick="openAdmin()" class="menu-link text-yellow-500 w-full">
+            <i class="fas fa-user-shield text-2xl"></i>
+            <div class="flex flex-col items-start">
+                <span class="text-[10px] text-gray-500 font-bold">الإدارة</span>
+                <span class="text-sm">لوحة التحكم</span>
+            </div>
+        </button>
+
+        <p class="mt-20 text-center text-[8px] text-gray-600 font-bold uppercase tracking-widest">Powered by Zack Cinema</p>
+    </div>
+    <div id="overlay" class="overlay" onclick="toggleSidebar()"></div>
+
     <div id="adminModal" class="admin-modal">
-        <h3 class="text-center font-black mb-6 text-yellow-500 text-xl uppercase italic">لوحة الإضافة الجديدة</h3>
+        <h2 class="text-center font-black text-yellow-500 mb-6 italic">إدارة الخدمات</h2>
         <div id="loginSection">
-            <input type="text" id="userInp" placeholder="اسم المستخدم" class="w-full p-4 mb-3 bg-slate-900 border border-slate-700 rounded-xl text-white text-center outline-none">
-            <input type="password" id="passInp" placeholder="كلمة المرور" class="w-full p-4 mb-6 bg-slate-900 border border-slate-700 rounded-xl text-white text-center outline-none">
-            <button onclick="checkAdmin()" class="w-full bg-yellow-500 text-black p-4 rounded-xl font-black uppercase">دخول</button>
+            <input type="password" id="passInp" placeholder="كلمة المرور" class="w-full p-4 mb-4 bg-slate-900 border border-slate-700 rounded-2xl text-white text-center outline-none">
+            <button onclick="checkAdmin()" class="w-full bg-yellow-500 text-black p-4 rounded-2xl font-black">دخول</button>
         </div>
         <div id="addSection" class="hidden">
-            <input type="text" id="mName" placeholder="اسم المحتوى" class="w-full p-4 mb-3 bg-slate-900 border border-slate-700 rounded-xl text-white text-right outline-none">
-            <input type="text" id="mUrl" placeholder="رابط السيرفر" class="w-full p-4 mb-3 bg-slate-900 border border-slate-700 rounded-xl text-white text-right outline-none">
-            <input type="text" id="mImg" placeholder="رابط البوستر" class="w-full p-4 mb-3 bg-slate-900 border border-slate-700 rounded-xl text-white text-right outline-none">
-            <select id="mCat" class="w-full p-4 mb-6 bg-slate-900 border border-slate-700 rounded-xl text-white text-right outline-none">
-                <option value="quran">القرآن الكريم</option>
-                <option value="live">بث مباشر</option>
+            <input type="text" id="mName" placeholder="اسم المحتوى" class="w-full p-4 mb-3 bg-slate-800 rounded-xl text-white text-right outline-none">
+            <input type="text" id="mUrl" placeholder="الرابط المباشر" class="w-full p-4 mb-3 bg-slate-800 rounded-xl text-white text-right outline-none">
+            <select id="mCat" class="w-full p-4 mb-6 bg-slate-800 rounded-xl text-white text-right outline-none">
+                <option value="quran">قرآن</option>
+                <option value="live">مباشر</option>
                 <option value="ramadan">رمضان</option>
                 <option value="movies">أفلام</option>
                 <option value="kids">كرتون</option>
                 <option value="music">أغاني</option>
             </select>
-            <div class="flex gap-3">
-                <button onclick="addItem()" class="flex-1 bg-green-600 p-4 rounded-xl text-white font-black">إضافة</button>
-                <button onclick="closeAdmin()" class="flex-1 bg-red-600 p-4 rounded-xl text-white font-black">إلغاء</button>
+            <div class="flex gap-2">
+                <button onclick="addItem()" class="flex-1 bg-green-600 p-4 rounded-xl font-bold text-xs uppercase">إضافة</button>
+                <button onclick="closeAdmin()" class="flex-1 bg-red-600 p-4 rounded-xl font-bold text-xs uppercase">إلغاء</button>
             </div>
         </div>
     </div>
 
-    <div id="sidebar" class="sidebar p-8 flex flex-col justify-between">
-        <div class="text-center">
-            <p class="text-xl font-black text-yellow-500 uppercase italic">KARIM KHALED</p>
-            <button onclick="openAdmin()" class="w-full bg-yellow-500 text-black p-4 rounded-2xl mt-8 font-black">لوحة التحكم</button>
-        </div>
-        <button onclick="toggleSidebar()" class="w-full p-4 bg-red-600/10 text-red-500 rounded-2xl font-black uppercase">إغلاق</button>
-    </div>
-    <div id="overlay" class="overlay" onclick="toggleSidebar()"></div>
-
     <script>
-        // تغيير اسم قاعدة البيانات لإجبار المتصفح على التحديث
-        let db = JSON.parse(localStorage.getItem('kr_v12_final_system')) || [];
+        let db = JSON.parse(localStorage.getItem('kr_v15_final_db')) || [];
         let currentTab = 'quran';
         const hls = new Hls();
 
-        window.onload = () => {
-            render();
-            if(localStorage.getItem('kr_admin_logged') === 'true') { showAddSection(); }
-        };
+        window.onload = () => { render(); if(localStorage.getItem('kr_admin') === 'true') showAddSection(); };
 
         function checkAdmin() {
-            if(document.getElementById('userInp').value === 'admin' && document.getElementById('passInp').value === 'admin') {
-                localStorage.setItem('kr_admin_logged', 'true');
-                showAddSection();
-            } else { alert("غلط!"); }
+            if(document.getElementById('passInp').value === 'admin') { localStorage.setItem('kr_admin', 'true'); showAddSection(); }
+            else { alert("الباسورد غلط!"); }
         }
 
-        function showAddSection() {
-            document.getElementById('loginSection').classList.add('hidden');
-            document.getElementById('addSection').classList.remove('hidden');
-        }
+        function showAddSection() { document.getElementById('loginSection').classList.add('hidden'); document.getElementById('addSection').classList.remove('hidden'); }
 
         function smartPlay(url, name) {
             document.getElementById('streamName').innerText = "PLAYING: " + name;
@@ -126,37 +146,33 @@
             const grid = document.getElementById('contentGrid');
             const items = db.filter(i => i.cat === currentTab);
             grid.innerHTML = items.length ? items.map((i, index) => `
-                <div onclick="smartPlay('${i.url}', '${i.name}')" class="ostora-card">
-                    <img src="${i.img || 'https://via.placeholder.com/300x450/1e293b/eab308?text=KR'}" class="w-full h-full object-cover opacity-40">
-                    <div class="absolute inset-0 bg-gradient-to-t from-black flex flex-col justify-end p-3">
-                        <p class="text-[10px] font-black text-yellow-500 truncate uppercase">${i.name}</p>
-                        <button onclick="event.stopPropagation(); deleteItem('${i.name}')" class="text-red-500 text-[10px] mt-1"><i class="fas fa-trash"></i></button>
-                    </div>
+                <div onclick="smartPlay('${i.url}', '${i.name}')" class="h-[150px] bg-slate-800/40 rounded-2xl border border-white/5 relative overflow-hidden flex flex-col justify-end p-4">
+                    <p class="text-[10px] font-black text-yellow-500 uppercase">${i.name}</p>
+                    <button onclick="event.stopPropagation(); deleteItem('${i.name}')" class="text-red-500 text-[10px] mt-2 w-fit"><i class="fas fa-trash"></i></button>
                 </div>
-            `).join('') : '<p class="col-span-3 text-center py-20 text-gray-700 text-[9px] font-black uppercase italic italic">فاضي</p>';
+            `).join('') : '<div class="col-span-2 text-center py-10 opacity-20 text-xs font-black">القسم فارغ</div>';
         }
 
-        function deleteItem(name) {
-            if(confirm("حذف؟")) { db = db.filter(i => i.name !== name); localStorage.setItem('kr_v12_final_system', JSON.stringify(db)); render(); }
-        }
-
-        function setTab(cat, btn) { currentTab = cat; document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active')); btn.classList.add('active'); render(); }
+        function deleteItem(name) { if(confirm("حذف؟")) { db = db.filter(i => i.name !== name); localStorage.setItem('kr_v15_final_db', JSON.stringify(db)); render(); } }
+        function setTab(cat, btn) { currentTab = cat; document.querySelectorAll('.service-btn').forEach(t => t.classList.remove('active')); btn.classList.add('active'); render(); }
+        
         function openAdmin() { document.getElementById('adminModal').style.display = 'block'; toggleSidebar(); }
         function closeAdmin() { document.getElementById('adminModal').style.display = 'none'; }
-        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('active'); document.getElementById('overlay').style.display = document.getElementById('sidebar').classList.contains('active') ? 'block' : 'none'; }
+        
+        function toggleSidebar() { 
+            const sb = document.getElementById('sidebar');
+            const ov = document.getElementById('overlay');
+            sb.classList.toggle('active'); 
+            ov.style.display = sb.classList.contains('active') ? 'block' : 'none'; 
+        }
 
         function addItem() {
             const name = document.getElementById('mName').value;
             const url = document.getElementById('mUrl').value;
-            const img = document.getElementById('mImg').value;
             const cat = document.getElementById('mCat').value;
-            if(name && url) {
-                db.unshift({name, url, img, cat});
-                localStorage.setItem('kr_v12_final_system', JSON.stringify(db));
-                alert("تم!"); render();
-            }
+            if(name && url) { db.unshift({name, url, cat}); localStorage.setItem('kr_v15_final_db', JSON.stringify(db)); alert("تم الحفظ!"); render(); }
         }
     </script>
 </body>
-                    </html>
-                    
+    </html>
+            
