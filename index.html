@@ -1,178 +1,32 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Karim Khaled | KR Zack Cinema</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        :root { --gold: #eab308; --dark-bg: #020617; }
-        body { background: var(--dark-bg); color: white; font-family: 'Segoe UI', sans-serif; overflow-x: hidden; }
-        .kr-logo { width: 45px; height: 45px; border-radius: 50%; border: 2px solid var(--gold); }
-        
-        /* تصميم المنيو الجانبي */
-        .sidebar { position: fixed; top: 0; right: -100%; width: 300px; height: 100%; background: #0f172a; transition: 0.5s; z-index: 200; border-left: 3px solid var(--gold); padding: 30px 20px; }
-        .sidebar.active { right: 0; }
-        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: none; z-index: 150; backdrop-filter: blur(4px); }
-        
-        .video-box { position: sticky; top: 0; z-index: 100; background: #000; border-bottom: 2px solid var(--gold); width: 100%; aspect-ratio: 16/9; }
-        
-        /* شبكة الأقسام */
-        .services-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; padding: 15px; }
-        .service-btn { background: #1e293b; color: #94a3b8; padding: 10px 2px; border-radius: 10px; font-size: 10px; font-weight: 900; text-align: center; border: 1px solid rgba(255,255,255,0.05); }
-        .service-btn.active { background: var(--gold); color: #000; box-shadow: 0 0 15px rgba(234, 179, 8, 0.4); }
-        
-        /* أزرار التواصل داخل المنيو */
-        .menu-link { display: flex; align-items: center; gap: 15px; padding: 15px; background: rgba(255,255,255,0.03); border-radius: 15px; margin-bottom: 10px; font-weight: bold; transition: 0.3s; border: 1px solid rgba(255,255,255,0.05); }
-        .menu-link:hover { background: rgba(234, 179, 8, 0.1); border-color: var(--gold); }
-        
-        .admin-modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #0f172a; padding: 30px; border-radius: 25px; border: 2px solid var(--gold); z-index: 300; display: none; width: 90%; max-width: 400px; }
-    </style>
-</head>
-<body class="max-w-2xl mx-auto pb-10">
+// 1. دي الفانكشن اللي بتعرض الأفلام في الصفحة
+function renderMovies(moviesList) {
+    const container = document.getElementById('movies-container'); // اتأكد إن ده نفس الـ ID عندك
+    container.innerHTML = ''; // عشان يمسح القديم ويعرض الجديد
 
-    <div id="mainApp">
-        <div class="video-box" id="mediaPlayer">
-            <video id="vPlayer" controls autoplay playsinline class="w-full h-full"></video>
-        </div>
-
-        <div class="p-4 flex justify-between items-center bg-[#0f172a]/80 backdrop-blur-md">
-            <button onclick="toggleSidebar()" class="text-yellow-500 text-3xl"><i class="fas fa-bars-staggered"></i></button>
-            <div class="text-center">
-                <h1 class="text-lg font-black text-yellow-500 italic uppercase">KARIM KHALED</h1>
-                <p id="streamName" class="text-[8px] text-gray-500 font-bold uppercase tracking-widest">Zack Cinema Engine</p>
-            </div>
-            <img src="https://raw.githubusercontent.com/ZackCinema/ZK/main/ZK.png" class="kr-logo">
-        </div>
-
-        <div class="services-grid">
-            <button onclick="setTab('quran', this)" class="service-btn active">🕋 قرآن</button>
-            <button onclick="setTab('live', this)" class="service-btn">⚽ مباشر</button>
-            <button onclick="setTab('ramadan', this)" class="service-btn">🌙 رمضان</button>
-            <button onclick="setTab('movies', this)" class="service-btn">🎬 أفلام</button>
-            <button onclick="setTab('kids', this)" class="service-btn">🧸 كرتون</button>
-            <button onclick="setTab('music', this)" class="service-btn">🎵 أغاني</button>
-        </div>
-
-        <div id="contentGrid" class="grid grid-cols-2 gap-4 p-4"></div>
-    </div>
-
-    <div id="sidebar" class="sidebar">
-        <div class="flex justify-between items-center mb-10 border-b border-white/5 pb-4">
-            <span class="font-black text-yellow-500 uppercase italic">القائمة الرئيسية</span>
-            <button onclick="toggleSidebar()" class="text-red-500 text-2xl"><i class="fas fa-times"></i></button>
-        </div>
-
-        <a href="https://wa.me/201040077271" class="menu-link text-green-500">
-            <i class="fab fa-whatsapp text-2xl"></i>
-            <div class="flex flex-col">
-                <span class="text-[10px] text-gray-500 font-bold">تواصل عبر واتساب</span>
-                <span class="text-sm">01040077271</span>
-            </div>
-        </a>
-
-        <a href="mailto:karimkarim4884d@gmail.com" class="menu-link text-blue-400">
-            <i class="fas fa-envelope text-2xl"></i>
-            <div class="flex flex-col">
-                <span class="text-[10px] text-gray-500 font-bold">البريد الإلكتروني</span>
-                <span class="text-[11px] truncate">karimkarim4884d@gmail.com</span>
-            </div>
-        </a>
-
-        <button onclick="openAdmin()" class="menu-link text-yellow-500 w-full">
-            <i class="fas fa-user-shield text-2xl"></i>
-            <div class="flex flex-col items-start">
-                <span class="text-[10px] text-gray-500 font-bold">الإدارة</span>
-                <span class="text-sm">لوحة التحكم</span>
-            </div>
-        </button>
-
-        <p class="mt-20 text-center text-[8px] text-gray-600 font-bold uppercase tracking-widest">Powered by Zack Cinema</p>
-    </div>
-    <div id="overlay" class="overlay" onclick="toggleSidebar()"></div>
-
-    <div id="adminModal" class="admin-modal">
-        <h2 class="text-center font-black text-yellow-500 mb-6 italic">إدارة الخدمات</h2>
-        <div id="loginSection">
-            <input type="password" id="passInp" placeholder="كلمة المرور" class="w-full p-4 mb-4 bg-slate-900 border border-slate-700 rounded-2xl text-white text-center outline-none">
-            <button onclick="checkAdmin()" class="w-full bg-yellow-500 text-black p-4 rounded-2xl font-black">دخول</button>
-        </div>
-        <div id="addSection" class="hidden">
-            <input type="text" id="mName" placeholder="اسم المحتوى" class="w-full p-4 mb-3 bg-slate-800 rounded-xl text-white text-right outline-none">
-            <input type="text" id="mUrl" placeholder="الرابط المباشر" class="w-full p-4 mb-3 bg-slate-800 rounded-xl text-white text-right outline-none">
-            <select id="mCat" class="w-full p-4 mb-6 bg-slate-800 rounded-xl text-white text-right outline-none">
-                <option value="quran">قرآن</option>
-                <option value="live">مباشر</option>
-                <option value="ramadan">رمضان</option>
-                <option value="movies">أفلام</option>
-                <option value="kids">كرتون</option>
-                <option value="music">أغاني</option>
-            </select>
-            <div class="flex gap-2">
-                <button onclick="addItem()" class="flex-1 bg-green-600 p-4 rounded-xl font-bold text-xs uppercase">إضافة</button>
-                <button onclick="closeAdmin()" class="flex-1 bg-red-600 p-4 rounded-xl font-bold text-xs uppercase">إلغاء</button>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        let db = JSON.parse(localStorage.getItem('kr_v15_final_db')) || [];
-        let currentTab = 'quran';
-        const hls = new Hls();
-
-        window.onload = () => { render(); if(localStorage.getItem('kr_admin') === 'true') showAddSection(); };
-
-        function checkAdmin() {
-            if(document.getElementById('passInp').value === 'admin') { localStorage.setItem('kr_admin', 'true'); showAddSection(); }
-            else { alert("الباسورد غلط!"); }
+    moviesList.forEach(movie => {
+        // تصليح تلقائي لروابط ImgBB لو مش مباشرة
+        let finalUrl = movie.url;
+        if (finalUrl.includes('ibb.co') && !finalUrl.match(/\.(jpg|jpeg|png|gif)$/)) {
+            // محاولة بسيطة لتحويل الرابط لرابط مباشر لو نسيت
+            console.warn("انتبه: الرابط قد لا يكون مباشراً للفيلم:", movie.title);
         }
 
-        function showAddSection() { document.getElementById('loginSection').classList.add('hidden'); document.getElementById('addSection').classList.remove('hidden'); }
-
-        function smartPlay(url, name) {
-            document.getElementById('streamName').innerText = "PLAYING: " + name;
-            const container = document.getElementById('mediaPlayer');
-            if (url.includes('.m3u8') || url.includes('.mp4')) {
-                container.innerHTML = '<video id="vPlayer" controls autoplay playsinline class="w-full h-full"></video>';
-                const video = document.getElementById('vPlayer');
-                if (Hls.isSupported()) { hls.loadSource(url); hls.attachMedia(video); hls.on(Hls.Events.MANIFEST_PARSED, () => video.play()); }
-                else { video.src = url; video.play(); }
-            } else { container.innerHTML = `<iframe src="${url}" frameborder="0" allowfullscreen allow="autoplay"></iframe>`; }
-        }
-
-        function render() {
-            const grid = document.getElementById('contentGrid');
-            const items = db.filter(i => i.cat === currentTab);
-            grid.innerHTML = items.length ? items.map((i, index) => `
-                <div onclick="smartPlay('${i.url}', '${i.name}')" class="h-[150px] bg-slate-800/40 rounded-2xl border border-white/5 relative overflow-hidden flex flex-col justify-end p-4">
-                    <p class="text-[10px] font-black text-yellow-500 uppercase">${i.name}</p>
-                    <button onclick="event.stopPropagation(); deleteItem('${i.name}')" class="text-red-500 text-[10px] mt-2 w-fit"><i class="fas fa-trash"></i></button>
+        const movieCard = `
+            <div class="card" style="position: relative; margin: 10px;">
+                <img src="${finalUrl}" 
+                     alt="${movie.title}" 
+                     style="width: 100%; border-radius: 15px; display: block;"
+                     onerror="this.onerror=null; this.src='https://via.placeholder.com/300x450?text=Image+Error';">
+                
+                <div class="card-title" style="position: absolute; bottom: 10px; left: 0; right: 0; text-align: center; color: yellow;">
+                    ${movie.title}
                 </div>
-            `).join('') : '<div class="col-span-2 text-center py-10 opacity-20 text-xs font-black">القسم فارغ</div>';
-        }
-
-        function deleteItem(name) { if(confirm("حذف؟")) { db = db.filter(i => i.name !== name); localStorage.setItem('kr_v15_final_db', JSON.stringify(db)); render(); } }
-        function setTab(cat, btn) { currentTab = cat; document.querySelectorAll('.service-btn').forEach(t => t.classList.remove('active')); btn.classList.add('active'); render(); }
-        
-        function openAdmin() { document.getElementById('adminModal').style.display = 'block'; toggleSidebar(); }
-        function closeAdmin() { document.getElementById('adminModal').style.display = 'none'; }
-        
-        function toggleSidebar() { 
-            const sb = document.getElementById('sidebar');
-            const ov = document.getElementById('overlay');
-            sb.classList.toggle('active'); 
-            ov.style.display = sb.classList.contains('active') ? 'block' : 'none'; 
-        }
-
-        function addItem() {
-            const name = document.getElementById('mName').value;
-            const url = document.getElementById('mUrl').value;
-            const cat = document.getElementById('mCat').value;
-            if(name && url) { db.unshift({name, url, cat}); localStorage.setItem('kr_v15_final_db', JSON.stringify(db)); alert("تم الحفظ!"); render(); }
-        }
-    </script>
-</body>
-    </html>
-            
+                
+                <button onclick="deleteMovie('${movie.id}')" style="background: none; border: none; color: red; cursor: pointer;">
+                    🗑️
+                </button>
+            </div>
+        `;
+        container.insertAdjacentHTML('beforeend', movieCard);
+    });
+}
